@@ -1,5 +1,4 @@
 version: "3"
-
 services:
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
@@ -111,6 +110,28 @@ services:
     depends_on:
       - kafka
       - zookeeper
+  hive-metastore:
+    image: apache/hive:4.0.0
+    container_name: hive-metastore
+    ports:
+      - "9083:9083"
+    environment:
+      - SERVICE_NAME=metastore
+    command: >
+      bash -c "hive --service metastore"
+
+  hive_server:
+    image: apache/hive:4.0.0
+    container_name: hive_server
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    environment:
+      - SERVICE_NAME=hiveserver2
+      - HIVE_SITE_CONF=/opt/hive/conf
+    command: >
+      bash -c "hive --service hiveserver2 --hiveconf hive.metastore.uris=thrift://hive-metastore:9083"
+
 
 volumes:
   hadoop_namenode:

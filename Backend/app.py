@@ -3,6 +3,7 @@ from confluent_kafka import Producer
 import json
 from uuid import uuid4
 
+
 app = Flask(__name__)
 
 # Configuration du producteur Kafka avec confluent_kafka
@@ -11,21 +12,21 @@ producer_config = {
 }
 producer = Producer(producer_config)
 
-# Liste pour stocker les découvertes de planètes
+# Liste pour stocker les decouvertes de planetes
 planets_discoveries = []
 
 @app.route('/discover_planet', methods=['POST'])
 def discover_planet():
     data = request.json
-    required_fields = ["Nom", "Découvreur", "Date de Découverte", "Masse", "Rayon", "Distance", "Type", "Statut", 
-                    "Atmosphère", "Température Moyenne", "Période Orbitale", "Nombre de Satellites", "Présence d’Eau"]
+    required_fields = ["Name","Num_Moons","Minerals","Gravity","Sunlight_Hours","Temperature","Rotation_Time","Colonisable", "Water_Presence"
+]
     
-    # Validation des données
+    # Validation des donnees
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"{field} is required"}), 400
     
-    # Ajout d'un ID unique à la découverte
+    # Ajout d'un ID unique à la decouverte
     data["ID"] = str(uuid4())
     planets_discoveries.append(data)
     
@@ -36,9 +37,9 @@ def discover_planet():
         else:
             print(f"Message delivered to {msg.topic()} [{msg.partition()}]")
 
-    # Envoi des données à Kafka
+    # Envoi des donnees à Kafka
     producer.produce('topic_1', key=data["ID"], value=json.dumps(data).encode('utf-8'), callback=delivery_report)
-    producer.flush()  # Attendre que tous les messages soient envoyés
+    producer.flush()  # Attendre que tous les messages soient envoyes
 
     return jsonify({"message": "Planet discovery added successfully!", "discovery": data}), 201
 

@@ -1,17 +1,23 @@
-# Utilisation d'une image de base Python
-FROM python:3.9-slim
+# Use a base image with Python 3.9
+FROM python:3.9-slim-buster
 
-# Définir le répertoire de travail
+# Set the working directory in the container
 WORKDIR /app
 
-# Copier les fichiers de configuration
-COPY requirements.txt requirements.txt
+# Install necessary OS packages
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    python3-dev  # This will install Python development headers
 
-# Installer les dépendances
-RUN pip install -r requirements.txt
+# Copy only the requirements file to leverage Docker cache
+COPY requirements.txt .
 
-# Copier tout le contenu du répertoire courant dans le conteneur
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application
 COPY . .
 
-# Définir la commande par défaut
-CMD ["python", "app.py"]
+# Command to run on container start
+CMD ["python3", "app.py"]
