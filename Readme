@@ -1,0 +1,122 @@
+
+# Planetarium Discovery System
+
+## Table des matières
+
+- Introduction
+- Architecture du Système
+- Prérequis
+- Installation et Configuration
+  - 1. Backend Flask
+  - 2. Pipeline Kafka
+  - 3. Traitement avec Apache Spark
+  - 4. Stockage dans HDFS et Hive
+  - 5. Frontend
+- Exécution du Système
+- Test du Système
+
+## Introduction
+
+Le Planetarium Discovery System est une application complète qui permet de découvrir et d'analyser des planètes via un système distribué. Le système utilise Flask pour le backend, Kafka pour le traitement en temps réel des messages, Apache Spark pour l'analyse des données, et HDFS et  Hive pour le stockage structuré.
+
+## Architecture du Système
+
+Le système est divisé en plusieurs composants principaux, tous dockerisés :
+
+**Backend Flask** : Responsable de recevoir les informations de découverte de planètes et de les envoyer à Kafka.
+**Pipeline Kafka** : Gère la transmission des messages en temps réel pour les découvertes de planètes.
+**Traitement avec Apache Spark** : Analyse les données des découvertes de planètes en temps réel, calcule des statistiques agrégées, et stocke les résultats.
+**Stockage dans HDFS et Hive** : Stocke les résultats des analyses et des prédictions dans HDFS et Hive pour une gestion structurée.
+**Frontend :** Interface utilisateur pour soumettre des découvertes de planètes..
+
+## Prérequis
+
+- Python 3.x
+- Flask
+- Apache Kafka
+- Apache Spark avec support Kafka
+- Hadoop HDFS
+- Apache Hive
+- Docker
+- Dockerfile
+- pip pour gérer les dépendances Python
+
+
+### Configuration Docker Compose
+
+Le système utilise Docker Compose pour orchestrer les services Kafka, Spark, Flask, et Zookeeper. Cela permet de démarrer tous les services nécessaires avec une seule commande, simplifiant ainsi le déploiement et la gestion de l'application.
+
+1. **Créer le fichier `docker-compose.yml`** : Ce fichier définit les services nécessaires, y compris Kafka, Zookeeper, Spark, et Flask, ainsi que leurs dépendances.
+
+
+## Installation et Configuration
+
+### 1. Backend Flask
+
+    Le backend Flask est configuré pour recevoir les informations sur les découvertes de planètes et les envoyer à Kafka. Il est démarré automatiquement via Docker Compose.
+
+1. **Installer les dépendances Python** :
+
+   ```bash
+   pip install flask flask-cors confluent-kafka
+   ```
+
+2. **Créer un topic Kafka** :
+
+   ```bash
+   bin/kafka-topics.sh --create --topic topic_1 --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
+   ```
+
+### 3. Traitement avec Apache Spark
+
+1. **Installer Apache Spark** 
+
+2. **Configurer Spark pour Kafka** :
+
+   ```bash
+   spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 /path/to/your/spark_script.py
+   ```
+
+3. **Exécuter le job Spark** : Le job Spark doit être configuré pour lire les messages Kafka, analyser les données, et stocker les résultats dans HDFS et Hive.
+
+### 4. Stockage dans HDFS et Hive
+
+1. **Configurer Hadoop HDFS** 
+
+2. **Configurer Hive** 
+
+3. **Configurer Spark pour Hive** :
+
+   ```python
+   spark = SparkSession.builder \
+       .appName("PlanetDiscoveryProcessor") \
+       .config("spark.sql.warehouse.dir", "/user/hive/warehouse") \
+       .enableHiveSupport() \
+       .getOrCreate()
+   ```
+
+### 5. Frontend
+
+1. **Configurer le Frontend** 
+
+2. **Tester la Soumission du Formulaire** : Soumettez des données via le formulaire pour voir si elles sont correctement envoyées à l'API Flask.
+
+## Exécution du Système
+
+1. **Démarrez les services** : Démarrez les  Kafka, Spark, HDFS, Hive, et Flask sont en cours d'exécution par docker container.
+
+2. **Lancez le job Spark** :
+
+   ```bash
+   spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 /bin/bash/consumer.py
+   ```
+
+3. **Utilisez le Frontend** : Soumettez des découvertes de planètes via le formulaire HTML pour tester le flux complet des données.
+
+## Test du Système
+
+1. **Tester l'API Flask** : j'ai utilisé  outil  Postman  pour envoyer des requêtes POST à votre API Flask et vérifier que les données sont correctement reçues.
+
+2. **Vérifier les Données dans Kafka** : Utilisez les outils Kafka pour lire les messages dans le topic Kafka et vérifier qu'ils sont correctement envoyés.
+
+3. **Vérifier les Résultats dans HDFS et Hive** :  les résultats des analyses Spark sont stockés dans HDFS et Hive en consultant les fichiers Parquet ou les tables Hive.
